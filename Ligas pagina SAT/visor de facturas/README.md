@@ -16,3 +16,5 @@ Investigar para la implementacion y uso para el manejo de clientes.
 En esta imagen se muestra el aplicativo
 ![alt text](image.png)
 
+
+buscar la forma de replicar esto y traer la informacion para poder atender a clientes
