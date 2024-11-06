@@ -8,3 +8,12 @@ paqueteria
 etc.
 
 buscar la normativa.
+
+
+
+-------------------TASAS--------------------
+
+2.1 % servicio de transporte y pasajeros y entrega de bienes
+1.% enajenación de bienes, prestación de servicios
+4% hospedaje
+
