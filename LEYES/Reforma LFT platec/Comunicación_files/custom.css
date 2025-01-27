@@ -1,0 +1,133 @@
+.twitter-sharing {
+background: #57cff4;
+color: #fff;
+cursor: pointer;
+display: inline-block;
+padding: 0.1em 0.6em;
+-webkit-border-radius: 6px;
+border-radius: 6px;
+font-family: sans-serif;
+font-size:10px;
+margin: 0;
+text-align: center;
+}
+
+.facebook-sharing {
+background: #3b5998;
+color: #fff;
+cursor: pointer;
+display: inline-block;
+padding: 0.1em 0.6em;
+-webkit-border-radius: 6px;
+border-radius: 6px;
+font-family: sans-serif;
+font-size:10px;
+margin: 0;
+text-align: center;
+}
+
+#calendar {
+    font-size: 11px;
+}
+
+#calendar td a {
+    color: #444444;
+}
+
+.calendar-active {
+    background-color: #aaaeaf!important;
+}
+#calendar td.calendar-active a {
+    color: white;
+}
+
+#calendar-body td.active {
+	background: #dbdbdb;
+}
+
+.no-padding {
+	padding-top: 1px;
+	padding-bottom: 1px;
+}
+
+.owl-theme .owl-nav [class*=owl-] {
+    color: #000 !important;
+    font-size: 35px;
+}
+.thumb-gallery .owl-carousel.show-nav-hover .owl-nav button.owl-prev {
+    left: -47px;
+}
+.thumb-gallery .owl-theme .owl-nav [class*=owl-] {
+    padding: 0px;
+}
+.thumb-gallery .owl-carousel .owl-nav {
+    top: 67%;
+}
+
+.header-style6 .stick .ne-main-menu nav ul li:first-child a {
+    padding: 5px 10px 15px 0;
+}
+
+.header-style6 .main-menu-area .ne-main-menu nav ul li:first-child a {
+    padding: 0px 10px 0px 0;
+}
+
+
+/* 
+  ##Device = Tablets, Ipads (portrait)
+  ##Screen = B/w 768px to 1024px
+*/
+
+@media (min-width: 768px) and (max-width: 1024px) {
+	.news-info-list {
+		margin-top: 60px;
+	}
+	.fixed-height2 {
+		min-height: 50px;
+	}
+}
+
+/* 
+  ##Device = Tablets, Ipads (landscape)
+  ##Screen = B/w 768px to 1024px
+*/
+
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+	.news-info-list {
+		margin-top: 10px;
+	}  
+}
+
+/* 
+  ##Device = Low Resolution Tablets, Mobiles (Landscape)
+  ##Screen = B/w 481px to 767px
+*/
+
+@media (min-width: 481px) and (max-width: 767px) {
+	.news-info-list {
+		margin-top: 60px;
+	}
+	.fixed-height2 {
+		min-height: 50px;
+	}
+	.gallery-principal {
+		margin-bottom: 50px;
+	}
+}
+
+/* 
+  ##Device = Most of the Smartphones Mobiles (Portrait)
+  ##Screen = B/w 320px to 479px
+*/
+
+@media (min-width: 320px) and (max-width: 480px) {
+	.news-info-list {
+		margin-top: 60px;
+	}
+	.fixed-height2 {
+		min-height: 50px;
+	}
+	.gallery-principal {
+		margin-bottom: 50px;
+	}
+}

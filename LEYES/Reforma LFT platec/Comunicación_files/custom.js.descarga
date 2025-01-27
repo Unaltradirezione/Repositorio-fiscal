@@ -1,0 +1,418 @@
+$(function(){
+    
+    
+    $action = {
+        init: function(){
+            $action.getTransmisiones();
+            $action.getGalerias();
+            $action.onClickTransmision();
+			$action.notification();
+            $action.clickTransmision();
+            $action.clickSearch();
+        },
+        getGalerias: function(){
+            
+            $(".gallery-secundary").on("click", ".image-gallery", function(){
+		        var $this = $(this);
+		        var $url  = window.baseUrl+"/galerias/byId/idGaleria"
+		        $.ajax({
+			        url: $url.replace("idGaleria", $this.data("id")),
+			        method: "post",
+			        dataType: "json",
+			        success: function($response){
+				        $.each($(".gallery-principal .owl-item"), function(i, v){
+					        $('#thumbGalleryDetail').trigger('remove.owl.carousel', [i]).trigger('refresh.owl.carousel');
+					        $('#thumbGalleryThumbs').trigger('remove.owl.carousel', [i]).trigger('refresh.owl.carousel');
+				        });
+				        $(".gallery-principal .gp-title").text($response.galeria.title);
+				        $(".gallery-principal .gp-view-date").html('<span><i class="fa fa-calendar" aria-hidden="true"></i></span>'+$response.galeria.view_date);
+				        //$(".gallery-principal .gp-images").html("");
+				        //$(".gallery-principal .gp-images-thumb").html("");
+				        $.each($response.galeria.images, function(i,v){					
+					        $('#thumbGalleryDetail').trigger('add.owl.carousel', $('<div><span class="img-thumbnail img-thumbnail-no-borders d-block"><img src="'+window.assetUrl+'/public/uploads/galerias/'+v.image+'" width="" height="" class="img-fluid"><div class="mask-content-custom"><p class="pie">'+v.pie+'</p></div></span></div>'), i).trigger('refresh.owl.carousel');
+					        $('#thumbGalleryThumbs').trigger('add.owl.carousel', $('<div><span class="img-thumbnail img-thumbnail-no-borders d-block cur-pointer"><img src="'+window.assetUrl+'/public/uploads/galerias/'+v.image+'" width="" height="" class="img-fluid"></span></div>'), i).trigger('refresh.owl.carousel');
+				        });
+			        }
+		        });
+	        });
+	        
+        },
+        refresh:function(){
+            
+            $action.getTransmisiones();
+            setTimeout(function(){
+                $action.refresh();
+            }, 10000);
+            
+        },
+		notification:function(){
+			
+            $.ajax({
+                url: window.baseUrl+"/transmisiones/last",
+                method: 'post',
+                dataType: 'json',
+                success: function(response){
+					//$('.envivo-menu').addClass('hidden');
+					var envivo = false;
+                    $.each(response, function(i, v) {
+                        $tmpl = $template.transmision();
+                        $tmpl = $tmpl.replace('[fecha]', v.fecha);
+                        $tmpl = $tmpl.replace('[hora]', v.hora);
+						if(v.status == 'activo') {
+							//$('.envivo-menu').removeClass('hidden');						
+							$('.vivo-on').removeClass('hidden');						
+							$('.vivo-off').addClass('hidden');
+							envivo = true;
+						} 
+                    });
+
+					if(envivo === false){
+						$('.vivo-on').addClass('hidden');						
+						$('.vivo-off').removeClass('hidden');
+					}
+                }
+            });
+            setTimeout(function(){
+                $action.notification();
+            }, 10000);
+            
+        },
+        getTransmisiones: function(){
+            
+            $.ajax({
+                url: window.baseUrl+"/transmisiones/last",
+                method: 'post',
+                dataType: 'json',
+                success: function(response){
+                    $('.col-transmisiones').html('');
+                    $.each(response, function(i, v) {
+                        $tmpl = $template.transmision();
+                        $tmpl = $tmpl.replace('[fecha]', v.fecha);
+                        $tmpl = $tmpl.replace('[hora]', v.hora);
+						$tmpl = $tmpl.replace('[hora]', v.hora);
+                        var $boton = (v.status === 'activo') ? 'vivo_boton.png' : 'vivo_boton_off.png' ;
+                        $tmpl = $tmpl.replace('[boton]', $boton);
+                        //$tmpl = $tmpl.replace('[url]', v.url);
+                        $tmpl = $tmpl.replace('[title]', v.title);
+						$tmpl = $tmpl.replace('[days]', v.days);
+						$tmpl = $tmpl.replace('[youtubeid]', v.youtubeid);
+						$tmpl = $tmpl.replace('[url]', v.url);
+						$tmpl = $tmpl.replace('[tipo]', v.tipo);
+                        $('.col-transmisiones').append($tmpl);
+						$('.section-envivo').removeClass('hidden');
+                    });
+						
+                }
+            });
+            
+        },
+        onClickTransmision: function(){
+            $('.row-transmision').on('click', '.item-transmision', function(){
+				if($(this).data('days') > 1) { 
+					return false;
+				} else if($(this).data('days') == 1) {
+					var d = new Date();
+					var regex = new RegExp(':', 'g'),
+						timeStr1 = $(this).data('hours'),
+						timeStr2 = d.getHours()+':'+d.getMinutes()+':'+d.getSeconds();
+					if(parseInt(timeStr2.replace(regex, ''), 10) < parseInt(timeStr1.replace(regex, ''), 10)){
+						return false;
+					}
+				}
+                $('.img-transmision').find('.title-transmision').text($(this).find('.item-transmision-title').html());
+				if($(this).data('tipo') == 'youtube'){
+					$('.img-transmision').find('.url-transmision').attr('href', 'https://www.youtube.com/watch?v=' + $(this).data('youtubeid'));
+					$('.img-transmision').find('.img-thumb-transmision').attr('src', 'https://img.youtube.com/vi/' + $(this).data('youtubeid') + '/0.jpg');
+				}
+				if($(this).data('tipo') == 'facebook'){
+					$('.img-transmision').find('.url-transmision').attr('href', $(this).data('url'));
+					//$('.img-transmision').find('.img-thumb-transmision').attr('src', 'https://img.youtube.com/vi/' + $(this).data('youtubeid') + '/0.jpg');
+				}				
+            });
+        },
+        clickTransmision: function() {
+            setTimeout( function(){
+                $('.row-transmision .item-transmision').eq(0).trigger('click');
+				$('.img-transmision').removeClass('invisible');
+				$action.refresh();
+            }, 10000);
+        },
+		clickSearch: function(){
+			var $search = $('#search');
+			$('.search-button').on('click', function(){
+				if($search.val() !== ''){
+					$('#gsc-i-id1').trigger('click');
+					$('#gsc-i-id1').val($search.val());
+					$('.gsc-search-button').trigger('click');
+					$search.val('');
+				}
+			});
+		},
+		checkCalendar: function(){
+			if($('#calendarItem').length > 0) {
+				switch($('#calendarItem').val()) {
+					case 'actividades':
+						return true;
+						break;
+				}
+				return false;
+			}
+		},
+		checkActividadesCalendar: function($month, $year){
+			
+			$.ajax({
+                url: window.baseUrl+"/calendario/actividades/",
+                method: 'post',
+				data: 'month='+$month+'&year='+$year,
+                dataType: 'json',
+                success: function(response){
+					$.each($('#calendar-body tr td a'), function(tdi, tdv){
+						$.each(response, function(i, v){
+							//console.log($(tdv).html()+" === "+i);
+							if($(tdv).html() === i){
+								$(tdv).addClass('item');
+							}
+						});
+					});
+					$.each($('#calendar-body tr td a'), function(tdi, tdv){
+						if($(tdv).hasClass('item')){
+							$(tdv).parent().addClass('active');
+						} else {
+							$(tdv).parent().html($(tdv).html());
+						}
+					});
+                }
+            });
+			
+		},
+		checkMonth: function(){
+			var $month = $('#current-month').val();
+			if($('#current-month').val() === '') {
+				var d = new Date();
+				var n = d.getMonth() + 1;
+				$month = n;
+			}
+			return $month;
+		},
+		checkYear: function(){
+			var $year = $('#current-year').val();
+			if($('#current-year').val() === '') {
+				var d = new Date();
+				var n = d.getFullYear();
+				$year = n;
+			}
+			return $year;
+		},
+    };
+
+
+    $action.init();
+
+
+	
+	$template = {
+	    transmision: function(){
+	        var $tpl_transmision = 
+	        `<div class="media mb-2 bg-primarytextcolor on-hover-bg-gray item-transmision" data-youtubeid="[youtubeid]" data-days="[days]" data-hours="[hora]" data-url="[url]" data-tipo="[tipo]"> 
+                    <a class="width25-lg" href="javascript:void(0);">
+                        <img src="`+window.assetUrl+`/assets/frontend/img/info/[boton]" alt="" class="img-fluid">
+                    </a>
+                    <div class="media-body media-padding10">
+                        <h3 class="title-medium-dark mb-none">
+                                        <a href="javascript:void(0);" class="item-transmision-title">[title]</a>
+                                    </h3>
+                        <h5 class="title-medium-dark mb-none">[fecha]<br>[hora]</h5>
+                    </div>
+                </div>`;
+                
+            return $tpl_transmision;
+	    }
+	};
+	
+	
+	
+	
+if(document.getElementById("current-month")){	
+	
+	var today = new Date();
+	
+	var currentMonth = "";
+	
+	if(document.getElementById("current-month").value !== "") {
+	    currentMonth = parseInt(document.getElementById("current-month").value) - 1;
+	} else {
+	    currentMonth = today.getMonth();
+	}
+	
+	var currentYear = "";
+	
+	if(document.getElementById("current-year").value !== ""){
+	    currentYear = parseInt(document.getElementById("current-year").value);
+	} else {
+	    currentYear = today.getFullYear();
+	}
+	
+	
+var selectYear = document.getElementById("year");
+var selectMonth = document.getElementById("month");
+
+var months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+
+var monthAndYear = document.getElementById("monthAndYear");
+showCalendar(currentMonth, currentYear);
+
+}
+
+
+$('#next').click(function(){
+    currentYear = (currentMonth === 11) ? currentYear + 1 : currentYear;
+    currentMonth = (currentMonth + 1) % 12;
+    showCalendar(currentMonth, currentYear);
+});
+
+$('#previous').click(function(){
+    currentYear = (currentMonth === 0) ? currentYear - 1 : currentYear;
+    currentMonth = (currentMonth === 0) ? 11 : currentMonth - 1;
+    showCalendar(currentMonth, currentYear);
+});
+
+function jump() {
+    currentYear = parseInt(selectYear.value);
+    currentMonth = parseInt(selectMonth.value);
+    showCalendar(currentMonth, currentYear);
+}
+
+function showCalendar(month, year) {
+
+	if($action.checkCalendar()) {
+		$action.checkActividadesCalendar(month+1, year);
+	}
+	
+    let c_month = month + 1;
+    if(c_month < 10) {c_month = "0" + c_month;}
+
+    let firstDay = (new Date(year, month)).getDay();
+    let daysInMonth = 32 - new Date(year, month, 32).getDate();
+
+    let tbl = document.getElementById("calendar-body"); // body of the calendar
+
+if(tbl) {
+    // clearing all previous cells
+    tbl.innerHTML = "";
+
+
+    // filing data about month and in the page via DOM.
+    monthAndYear.innerHTML = months[month] + " " + year;
+    selectYear.value = year;
+    selectMonth.value = month;
+
+    // creating all cells
+    let date = 1;
+    for (let i = 0; i < 6; i++) {
+        // creates a table row
+        let row = document.createElement("tr");
+
+        //creating individual cells, filing them up with data.
+        for (let j = 0; j < 7; j++) {
+            if (i === 0 && j < firstDay) {
+                let cell = document.createElement("td");
+                let cellText = document.createTextNode("");
+                cell.appendChild(cellText);
+                row.appendChild(cell);
+            }
+            else if (date > daysInMonth) {
+                break;
+            }
+
+            else {
+                let cell = document.createElement("td");
+                let cellText = document.createTextNode(date);
+                
+                if(document.getElementById("current-day").value !== "") {
+                    if (date === parseInt(document.getElementById("current-day").value) && year === parseInt(document.getElementById("current-year").value) && month === parseInt(document.getElementById("current-month").value) - 1) { 
+                        
+                        cell.classList.add("calendar-active");
+                    }
+    	        } else {
+    	            if (date === today.getDate() && year === today.getFullYear() && month === today.getMonth()) {
+                        cell.classList.add("calendar-active");
+                    }
+    	        }
+	
+                 // color today's date
+                cell.classList.add("day-calendar");
+				
+				var string = window.location.href;
+				var substring = "actividades/";
+				var $url = window.location.href;
+				var $question = '';
+				if(string.indexOf(substring) !== -1) {
+					if(string.indexOf('enviado') !== -1) {
+						$url = string.substring(0, string.length-11);
+					} else {
+						$url = string.substring(0, string.length-3);
+					}
+					$question = '?';
+				}
+                
+                if(date < 10) {c_day = "0" + date;} else {c_day = date;}
+                let link = document.createElement("a");
+				let $href = removeParam("date", $url);
+				$href = removeParam("p", $href);
+				
+                link.setAttribute('href', $href + $question + "&p=1&date=" + year + "-" + c_month + "-" + c_day);
+                link.appendChild(cellText);
+                
+                cell.appendChild(link);
+                row.appendChild(cell);
+                date++;
+            }
+
+
+        }
+
+        tbl.appendChild(row);
+    }
+}
+
+}
+	
+});
+
+
+$(window).load(function() {
+  $('img').each(function() {
+    if (!this.complete || typeof this.naturalWidth == "undefined" || this.naturalWidth == 0) {
+      // image was broken, replace with your new image
+      this.src = window.assetUrl + '/public/uploads/samples/noimage.jpg';
+    }
+	
+	setTimeout(function(){
+		$('.owl-prev').html('<span aria-label="Previous">‹</span>');
+		$('.owl-next').html('<span aria-label="Next">›</span>');
+	}, 2000);
+	
+  });
+  $('.gsc-search-box').addClass('hidden');
+});
+
+
+
+
+function removeParam(key, sourceURL) {
+    var rtn = sourceURL.split("?")[0],
+        param,
+        params_arr = [],
+        queryString = (sourceURL.indexOf("?") !== -1) ? sourceURL.split("?")[1] : "";
+    if (queryString !== "") {
+        params_arr = queryString.split("&");
+        for (var i = params_arr.length - 1; i >= 0; i -= 1) {
+            param = params_arr[i].split("=")[0];
+            if (param === key) {
+                params_arr.splice(i, 1);
+            }
+        }
+        rtn = rtn + "?" + params_arr.join("&");
+    }
+    return rtn;
+}
