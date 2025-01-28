@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cálculo ISR Mensual y Anual</title>
+  <script>
+    function calcularISR() {
+      // Entradas del usuario
+      const ingresosMensuales = parseFloat(document.getElementById("ingresos").value) || 0;
+      const retenciones = parseFloat(document.getElementById("retenciones").value) || 0;
+      const gastos = parseFloat(document.getElementById("gastos").value) || 0;
+      const noDeducibles = parseFloat(document.getElementById("noDeducibles").value) || 0;
+
+      // Variables para el cálculo mensual
+      const limiteInferior = 8952.50;
+      const porcentajeExcedente = 6.40 / 100;
+      const cuotaFija = 171.88;
+
+      // Calcular ingresos netos
+      const ingresosNetos = ingresosMensuales - retenciones - gastos - noDeducibles;
+
+      // Cálculo mensual
+      const excedente = ingresosNetos - limiteInferior > 0 ? ingresosNetos - limiteInferior : 0;
+      const impuestoExcedente = excedente * porcentajeExcedente;
+      const isrMensual = cuotaFija + impuestoExcedente;
+
+      // Cálculo anual basado en tasas acumulativas
+      const tasaAnual1 = 1.00 / 100;
+      const tasaAnual2 = 2.10 / 100;
+      const tasaAnual3 = 4.00 / 100;
+      const isrAnual1 = ingresosNetos * tasaAnual1;
+      const isrAnual2 = ingresosNetos * tasaAnual2;
+      const isrAnual3 = ingresosNetos * tasaAnual3;
+
+      // Mostrar resultados
+      document.getElementById("resultadoMensual").textContent = `ISR Mensual: $${isrMensual.toFixed(2)}`;
+      document.getElementById("resultadoAnual").innerHTML = `
+        <tr>
+          <td>1%</td>
+          <td>$${isrAnual1.toFixed(2)}</td>
+        </tr>
+        <tr>
+          <td>2.1%</td>
+          <td>$${isrAnual2.toFixed(2)}</td>
+        </tr>
+        <tr>
+          <td>4%</td>
+          <td>$${isrAnual3.toFixed(2)}</td>
+        </tr>
+      `;
+    }
+  </script>
+</head>
+<body>
+  <h1>Cálculo de ISR Mensual y Anual</h1>
+  <div>
+    <label for="ingresos">Ingresos Mensuales:</label>
+    <input type="number" id="ingresos" placeholder="Ej. 15000">
+    <br>
+    <label for="retenciones">Retenciones:</label>
+    <input type="number" id="retenciones" placeholder="Ej. 1000">
+    <br>
+    <label for="gastos">Gastos:</label>
+    <input type="number" id="gastos" placeholder="Ej. 2000">
+    <br>
+    <label for="noDeducibles">No Deducibles:</label>
+    <input type="number" id="noDeducibles" placeholder="Ej. 500">
+    <br><br>
+    <button onclick="calcularISR()">Calcular ISR</button>
+  </div>
+  <h2>Resultados</h2>
+  <p id="resultadoMensual"></p>
+  <table border="1">
+    <thead>
+      <tr>
+        <th>Tasa</th>
+        <th>ISR Anual</th>
+      </tr>
+    </thead>
+    <tbody id="resultadoAnual"></tbody>
+  </table>
+</body>
+</html>
