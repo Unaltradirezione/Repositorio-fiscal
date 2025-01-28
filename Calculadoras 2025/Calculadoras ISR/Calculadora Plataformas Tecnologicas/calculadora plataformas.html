@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Impuestos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      padding: 0;
+      background-color: #f4f4f9;
+      color: #333;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #fff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    .input-group {
+      margin-bottom: 20px;
+    }
+    label {
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      font-size: 18px;
+      color: #fff;
+      background-color: #0375f8;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #035ac8;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #e3f2fd;
+      border: 1px solid #90caf9;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Calculadora de Impuestos</h1>
+    <h2>Plataformas Tecnológicas</h2>
+    <div class="input-group">
+      <label for="ingresoPlataformas">Ingreso mensual para Plataformas Tecnológicas:</label>
+      <input type="number" id="ingresoPlataformas" placeholder="Ingresa tu ingreso mensual">
+    </div>
+    <div class="input-group">
+      <label for="retencionesPlataformas">Retenciones mensuales aplicadas:</label>
+      <input type="number" id="retencionesPlataformas" placeholder="Ingresa las retenciones aplicadas">
+    </div>
+    <div class="input-group">
+      <label for="tipoActividad">Tipo de Actividad:</label>
+      <select id="tipoActividad">
+        <option value="0.021">Transporte terrestre de pasajeros y entrega de bienes - 2.1%</option>
+        <option value="0.04">Prestación de servicios de hospedaje - 4%</option>
+        <option value="0.01">Enajenación de bienes y prestación de servicios - 1%</option>
+      </select>
+    </div>
+    <button onclick="calcularPlataformas()">Calcular Impuesto para Plataformas</button>
+    <div id="resultadoPlataformas" class="result"></div>
+  </div>
+
+  <script>
+    function calcularPlataformas() {
+      const ingreso = parseFloat(document.getElementById("ingresoPlataformas").value);
+      const retenciones = parseFloat(document.getElementById("retencionesPlataformas").value) || 0;
+      const tasa = parseFloat(document.getElementById("tipoActividad").value);
+
+      if (!ingreso || ingreso <= 0) {
+        document.getElementById("resultadoPlataformas").innerHTML =
+          "<strong>Por favor, ingresa un monto válido.</strong>";
+        return;
+      }
+
+      const impuesto = ingreso * tasa;
+      const impuestoFinal = Math.max(0, impuesto - retenciones); // Restar retenciones, pero sin que el resultado sea negativo
+      document.getElementById("resultadoPlataformas").innerHTML = `
+        <strong>Impuesto Plataformas:</strong> $${impuesto.toFixed(2)}<br>
+        <strong>Retenciones:</strong> $${retenciones.toFixed(2)}<br>
+        <strong>Impuesto a pagar:</strong> $${impuestoFinal.toFixed(2)}
+      `;
+    }
+  </script>
+</body>
+</html>

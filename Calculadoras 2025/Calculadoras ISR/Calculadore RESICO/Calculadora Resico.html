@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de RESICO</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      padding: 0;
+      background-color: #f4f4f9;
+      color: #333;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #fff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    .input-group {
+      margin-bottom: 20px;
+    }
+    label {
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      font-size: 18px;
+      color: #fff;
+      background-color: #0375f8;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #025fcc;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #e3f2fd;
+      border: 1px solid #90caf9;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Calculadora de RESICO</h1>
+
+    <!-- Sección RESICO -->
+    <h2>Cálculo Mensual</h2>
+    <div class="input-group">
+      <label for="ingresoRESICOmensual">Ingreso mensual para RESICO:</label>
+      <input type="number" id="ingresoRESICOmensual" placeholder="Ingresa tu ingreso mensual">
+    </div>
+    <button onclick="calcularRESICOmensual()">Calcular RESICO Mensual</button>
+    <div id="resultadoRESICOmensual" class="result"></div>
+  </div>
+
+  <script>
+    // Cálculo de RESICO Mensual
+    function calcularRESICOmensual() {
+      const ingreso = parseFloat(document.getElementById("ingresoRESICOmensual").value);
+      const tasas = [
+        { limite: 25000.00, tasa: 1.0 },
+        { limite: 50000.00, tasa: 1.1 },
+        { limite: 83333.33, tasa: 1.5 },
+        { limite: 208333.33, tasa: 2.0 },
+        { limite: 3500000.00, tasa: 2.5 },
+      ];
+
+      let impuesto = 0;
+      for (const tramo of tasas) {
+        if (ingreso <= tramo.limite) {
+          impuesto = ingreso * (tramo.tasa / 100);
+          break;
+        }
+      }
+
+      document.getElementById("resultadoRESICOmensual").innerHTML = `<strong>RESICO Mensual:</strong> $${impuesto.toFixed(2)}`;
+    }
+  </script>
+</body>
+</html>

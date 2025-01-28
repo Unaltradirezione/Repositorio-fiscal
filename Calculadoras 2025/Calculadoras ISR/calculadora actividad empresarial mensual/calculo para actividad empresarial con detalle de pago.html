@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Impuestos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      padding: 0;
+      background-color: #f4f4f9;
+      color: #333;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #fff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    .input-group {
+      margin-bottom: 20px;
+    }
+    label {
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      font-size: 18px;
+      color: #fff;
+      background-color: #0375f8;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0375f8;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #e3f2fd;
+      border: 1px solid #90caf9;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Calculadora de Impuestos 2025</h1>
+    <h2>Actividad empresarial</h2>
+
+    <!-- Sección ISR -->
+    <h2>ISR</h2>
+    <div class="input-group">
+      <label for="ingresoISRmensual">Ingreso mensual para ISR:</label>
+      <input type="number" id="ingresoISRmensual" placeholder="Ingresa tu ingreso mensual">
+    </div>
+    <button onclick="calcularISRmensual()">Calcular ISR Mensual</button>
+    <div id="resultadoISRmensual" class="result"></div>
+  </div>
+
+  <script>
+    function calcularISRmensual() {
+      const ingreso = parseFloat(document.getElementById("ingresoISRmensual").value);
+      if (!ingreso || ingreso <= 0) {
+        document.getElementById("resultadoISRmensual").innerHTML = 
+          "<strong>Por favor, ingresa un monto válido.</strong>";
+        return;
+      }
+
+      const tarifasMensuales = [
+        { limiteInferior: 0.01, limiteSuperior: 746.04, cuota: 0, tasa: 1.92 },
+        { limiteInferior: 746.05, limiteSuperior: 6332.05, cuota: 14.32, tasa: 6.4 },
+        { limiteInferior: 6332.06, limiteSuperior: 11128.01, cuota: 371.83, tasa: 10.88 },
+        { limiteInferior: 11128.02, limiteSuperior: 12935.82, cuota: 893.63, tasa: 16 },
+        { limiteInferior: 12935.83, limiteSuperior: 15487.71, cuota: 1182.88, tasa: 17.92 },
+        { limiteInferior: 15487.72, limiteSuperior: 31236.49, cuota: 1640.18, tasa: 21.36 },
+        { limiteInferior: 31236.50, limiteSuperior: 49233.00, cuota: 5004.12, tasa: 23.52 },
+        { limiteInferior: 49233.01, limiteSuperior: 93993.90, cuota: 9236.89, tasa: 30 },
+        { limiteInferior: 93993.91, limiteSuperior: 125325.20, cuota: 22665.17, tasa: 32 },
+        { limiteInferior: 125325.21, limiteSuperior: 375975.61, cuota: 32691.18, tasa: 34 },
+        { limiteInferior: 375975.62, limiteSuperior: Infinity, cuota: 117912.32, tasa: 35 },
+      ];
+
+      let isr = 0;
+
+      for (const tramo of tarifasMensuales) {
+        if (ingreso >= tramo.limiteInferior && ingreso <= tramo.limiteSuperior) {
+          const excedente = ingreso - tramo.limiteInferior;
+          const impuestoExcedente = (excedente * tramo.tasa) / 100;
+          isr = tramo.cuota + impuestoExcedente;
+          break;
+        }
+      }
+
+      document.getElementById("resultadoISRmensual").innerHTML = `
+        <strong>Detalle del Cálculo:</strong><br>
+        Ingreso Mensual: $${ingreso.toFixed(2)}<br>
+        Límite Inferior: $${tarifasMensuales.find(t => ingreso >= t.limiteInferior && ingreso <= t.limiteSuperior).limiteInferior.toFixed(2)}<br>
+        Excedente: $${(ingreso - tarifasMensuales.find(t => ingreso >= t.limiteInferior && ingreso <= t.limiteSuperior).limiteInferior).toFixed(2)}<br>
+        Porcentaje sobre el Excedente: ${tarifasMensuales.find(t => ingreso >= t.limiteInferior && ingreso <= t.limiteSuperior).tasa}%<br>
+        Impuesto sobre Excedente: $${((ingreso - tarifasMensuales.find(t => ingreso >= t.limiteInferior && ingreso <= t.limiteSuperior).limiteInferior) * tarifasMensuales.find(t => ingreso >= t.limiteInferior && ingreso <= t.limiteSuperior).tasa / 100).toFixed(2)}<br>
+        Cuota Fija: $${tarifasMensuales.find(t => ingreso >= t.limiteInferior && ingreso <= t.limiteSuperior).cuota.toFixed(2)}<br>
+        <strong>Total ISR a pagar: $${isr.toFixed(2)}</strong>
+      `;
+    }
+  </script>
+</body>
+</html>
