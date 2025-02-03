@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Impuestos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      padding: 0;
+      background-color: #f4f4f9;
+      color: #333;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #fff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    .input-group {
+      margin-bottom: 20px;
+    }
+    label {
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      font-size: 18px;
+      color: #fff;
+      background-color: #0375f8;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #035fcf;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #e3f2fd;
+      border: 1px solid #90caf9;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Calculadora de 2025</h1>
+    <h2>Actividad empresarial</h2>
+
+    <h2>ISR</h2>
+    <div class="input-group">
+      <label for="ingresoISRmensual">Ingreso mensual para ISR:</label>
+      <input type="number" id="ingresoISRmensual" placeholder="Ingresa tu ingreso mensual">
+    </div>
+    
+    <div class="input-group">
+      <label for="deducibles">Deducibles:</label>
+      <input type="number" id="deducibles" placeholder="Ingresa tus deducibles">
+    </div>
+    
+    <div class="input-group">
+      <label for="retenciones">Retenciones de ISR:</label>
+      <input type="number" id="retenciones" placeholder="Ingresa las retenciones de ISR">
+    </div>
+    
+    <div class="input-group">
+      <label for="pagosProvisionales">Pagos provisionales:</label>
+      <input type="number" id="pagosProvisionales" placeholder="Ingresa los pagos provisionales">
+    </div>
+    
+    <button onclick="calcularISRmensual()">Calcular ISR Mensual</button>
+    <div id="resultadoISRmensual" class="result"></div>
+  </div>
+
+  <script>
+    function calcularISRmensual() {
+      const ingreso = parseFloat(document.getElementById("ingresoISRmensual").value);
+      const deducibles = parseFloat(document.getElementById("deducibles").value) || 0;
+      const retenciones = parseFloat(document.getElementById("retenciones").value) || 0;
+      const pagosProvisionales = parseFloat(document.getElementById("pagosProvisionales").value) || 0;
+      
+      if (!ingreso || ingreso <= 0) {
+        document.getElementById("resultadoISRmensual").innerHTML = 
+          "<strong>Por favor, ingresa un monto válido.</strong>";
+        return;
+      }
+      
+      // Cálculo de la base de los deducibles
+      const baseDeducibles = parseFloat((deducibles / 1.16).toFixed(4));
+      const ingresoNeto = ingreso - baseDeducibles;
+
+      if (ingresoNeto < 0) {
+        document.getElementById("resultadoISRmensual").innerHTML = `
+          <strong>Pérdida del ejercicio: $${Math.abs(ingresoNeto).toFixed(2)}</strong>
+        `;
+        return;
+      }
+
+      const tarifasMensuales = [
+        { limiteInferior: 0.01, limiteSuperior: 746.04, cuota: 0, tasa: 1.92 },
+        { limiteInferior: 746.05, limiteSuperior: 6332.05, cuota: 14.32, tasa: 6.4 },
+        { limiteInferior: 6332.06, limiteSuperior: 11128.01, cuota: 371.83, tasa: 10.88 },
+        { limiteInferior: 11128.02, limiteSuperior: 12935.82, cuota: 893.63, tasa: 16 },
+        { limiteInferior: 12935.83, limiteSuperior: 15487.71, cuota: 1182.88, tasa: 17.92 },
+        { limiteInferior: 15487.72, limiteSuperior: 31236.49, cuota: 1640.18, tasa: 21.36 },
+        { limiteInferior: 31236.50, limiteSuperior: 49233.00, cuota: 5004.12, tasa: 23.52 },
+        { limiteInferior: 49233.01, limiteSuperior: 93993.90, cuota: 9236.89, tasa: 30 },
+        { limiteInferior: 93993.91, limiteSuperior: 125325.20, cuota: 22665.17, tasa: 32 },
+        { limiteInferior: 125325.21, limiteSuperior: 375975.61, cuota: 32691.18, tasa: 34 },
+        { limiteInferior: 375975.62, limiteSuperior: Infinity, cuota: 117912.32, tasa: 35 },
+      ];
+
+      let isr = 0;
+
+      for (const tramo of tarifasMensuales) {
+        if (ingresoNeto >= tramo.limiteInferior && ingresoNeto <= tramo.limiteSuperior) {
+          const excedente = ingresoNeto - tramo.limiteInferior;
+          const impuestoExcedente = (excedente * tramo.tasa) / 100;
+          isr = tramo.cuota + impuestoExcedente;
+          break;
+        }
+      }
+
+      // Restar retenciones y pagos provisionales
+      let totalPagar = isr - retenciones - pagosProvisionales;
+      totalPagar = totalPagar < 0 ? 0 : totalPagar;
+
+      document.getElementById("resultadoISRmensual").innerHTML = `
+        <strong>Impuesto a pagar: $${totalPagar.toFixed(2)}</strong>
+      `;
+    }
+  </script>
+</body>
+</html>
