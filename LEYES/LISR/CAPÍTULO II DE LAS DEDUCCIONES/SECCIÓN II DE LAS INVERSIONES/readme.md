@@ -1,0 +1,1 @@
+Artículos 31 al 38
